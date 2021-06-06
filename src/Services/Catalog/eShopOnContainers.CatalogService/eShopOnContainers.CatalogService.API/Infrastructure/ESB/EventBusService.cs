@@ -1,6 +1,22 @@
-﻿namespace eShopOnContainers.CatalogService.API.Infrastructure.ESB
+﻿using eShopOnContainers.Events;
+using MassTransit;
+using System;
+using System.Threading.Tasks;
+
+namespace eShopOnContainers.CatalogService.API.Infrastructure.ESB
 {
     public class EventBusService : IEventBusService
     {
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        public EventBusService(IPublishEndpoint publishEndpoint)
+        {
+            _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+        }
+
+        public Task PublishProductPriceChangedEvent(ProductPriceChangedEvent @event)
+        {
+            return _publishEndpoint.Publish(@event);
+        }
     }
 }

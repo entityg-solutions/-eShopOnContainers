@@ -11,7 +11,7 @@ namespace eShopOnContainers.CatalogService.API.Infrastructure.Persistence
         }
         public DbSet<CatalogItem> CatalogItems { get; set; }
         public DbSet<CatalogBrand> CatalogBrands { get; set; }
-        public DbSet<CatalogType> CatalogTypes { get; set; }
+        public DbSet<CatalogType> CatalogTypes { get; set; }    
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

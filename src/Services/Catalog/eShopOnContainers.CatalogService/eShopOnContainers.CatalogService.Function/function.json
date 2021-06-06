@@ -1,0 +1,17 @@
+{
+  "bindings": [
+    {
+      "type": "httpTrigger",
+      "name": "SendMessage",
+      "direction": "in",
+      "methods": [ "get" ],
+      "route": "api/v1/sendMessage"
+    },
+
+    {
+      "type": "http",
+      "name": "res",
+      "direction": "out"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
+using System.Reflection;
 using eShopOnContainers.CatalogService.API.Extensions;
+using eShopOnContainers.CatalogService.API.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +26,11 @@ namespace eShopOnContainers.CatalogService.API
             services.AddControllers()
                 .Services
                 .AddSwagger()
-                .AddDbContext(Configuration);
+                .AddDbContext(Configuration)
+                .AddCustomMediatR()
+                .AddEventBus(Configuration)
+                //.AddRabbitMq(Configuration);
+                ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +51,8 @@ namespace eShopOnContainers.CatalogService.API
             {
                 endpoints.MapControllers();
             });
+
+            
         }
     }
 }

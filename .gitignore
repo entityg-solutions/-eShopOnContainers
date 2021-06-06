@@ -4,3 +4,6 @@
 
 /src/Services/Catalog/eShopOnContainers.CatalogService/eShopOnContainers.CatalogService.API/bin/Debug/net5.0
 /src/Services/Catalog/eShopOnContainers.CatalogService/eShopOnContainers.CatalogService.API/obj
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events/bin/Debug
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events/obj
+/src/Services/Catalog/eShopOnContainers.CatalogService/eShopOnContainers.CatalogService.API/bin/Release/net5.0
