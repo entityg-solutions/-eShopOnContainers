@@ -5,7 +5,7 @@ using MediatR;
 
 namespace eShopOnContainers.CatalogService.API.Application.Features.CatalogItem.v1.GetItems.Requests
 {
-    public class GetAllItemQuery : QueryBaseDto, IRequest<PaginatedItemsDto<CatalogItemDto>>
+    public class GetAllItemDto : PaginatedQueryBaseDto, IRequest<PaginatedItemsDto<CatalogItemDto>>
     {
         public string Ids { get; set; }
     }

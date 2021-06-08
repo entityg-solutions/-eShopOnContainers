@@ -13,7 +13,7 @@ using eShopOnContainers.CatalogService.API.Application.Features.CatalogItem.v1.G
 
 namespace eShopOnContainers.CatalogService.API.Application.Features.CatalogItem.v1.GetItems
 {
-    public class GetAllItemQueryHandler : IRequestHandler<GetAllItemQuery, PaginatedItemsDto<CatalogItemDto>>
+    public class GetAllItemQueryHandler : IRequestHandler<GetAllItemDto, PaginatedItemsDto<CatalogItemDto>>
     {
         private readonly CatalogContext _context;
 
@@ -22,7 +22,7 @@ namespace eShopOnContainers.CatalogService.API.Application.Features.CatalogItem.
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<PaginatedItemsDto<CatalogItemDto>> Handle(GetAllItemQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedItemsDto<CatalogItemDto>> Handle(GetAllItemDto request, CancellationToken cancellationToken)
         {
             var query = _context.CatalogItems.AsQueryable();
             

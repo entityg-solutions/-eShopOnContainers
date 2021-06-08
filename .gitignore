@@ -7,3 +7,8 @@
 /src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events/bin/Debug
 /src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events/obj
 /src/Services/Catalog/eShopOnContainers.CatalogService/eShopOnContainers.CatalogService.API/bin/Release/net5.0
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.EventBus/obj
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.EventLog/obj
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events.Core/obj
+/src/BuildingBlocks/eShopOnContainers.BuildingBlocks/eShopOnContainers.Events.Core/bin/Debug/netstandard2.1
+/src/Web/eShopOnContainers.HeathChecks/eShopOnContainers.HeathChecks/obj/Debug/net5.0

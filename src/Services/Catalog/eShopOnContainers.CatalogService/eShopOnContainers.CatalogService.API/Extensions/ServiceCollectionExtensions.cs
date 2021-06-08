@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using MediatR;
 using RabbitMQ.Client;
+using MassTransit.KafkaIntegration;
 
 namespace eShopOnContainers.CatalogService.API.Extensions
 {
@@ -31,17 +32,32 @@ namespace eShopOnContainers.CatalogService.API.Extensions
 
         public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services
-                .AddDbContext<CatalogContext>(options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                        npgsqlOptionsAction =>
-                        {
-                            npgsqlOptionsAction.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                            npgsqlOptionsAction.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorCodesToAdd: null);
-                        });
-                });
+            //services
+            //    .AddDbContext<CatalogContext>(options =>
+            //    {
+            //        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+            //            npgsqlOptionsAction =>
+            //            {
+            //                npgsqlOptionsAction.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+            //                //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+            //                npgsqlOptionsAction.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorCodesToAdd: null);
+            //            });
+            //    });
+
+            //services
+            //    .AddDbContext<CatalogContext>(options =>
+            //    {
+            //        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+            //            npgsqlOptionsAction =>
+            //            {
+            //                npgsqlOptionsAction.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+            //                //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+            //                npgsqlOptionsAction.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorCodesToAdd: null);
+            //            });
+            //    });
+
+            services.AddDbContext<CatalogContext>(options =>
+                options.UseInMemoryDatabase(nameof(CatalogContext)));
 
             return services;
         }
@@ -57,7 +73,7 @@ namespace eShopOnContainers.CatalogService.API.Extensions
         {
             IBusControl azureServiceBus = Bus.Factory.CreateUsingAzureServiceBus(busFactoryConfig =>
             {
-                string subscriptionName = "eShopOnContainers.CatalogService.API";
+                string subscriptionName = "eShopOnContainers.CatalogService.API.Local";
 
                 busFactoryConfig.Message<ProductPriceChangedEvent>(configTopology =>
                 {
@@ -85,9 +101,8 @@ namespace eShopOnContainers.CatalogService.API.Extensions
             services.AddSingleton<IPublishEndpoint>(azureServiceBus);
             services.AddSingleton<ISendEndpointProvider>(azureServiceBus);
             services.AddSingleton<IBus>(azureServiceBus);
-
-            services.AddScoped<IEventBusService, EventBusService>();
-
+            services.AddScoped<IEventBusService, AzureServiceBusService>();
+            
             return services;
         }
 
@@ -117,7 +132,42 @@ namespace eShopOnContainers.CatalogService.API.Extensions
 
             services.AddMassTransitHostedService();
 
-            services.AddScoped<IEventBusService, EventBusService>();
+            services.AddScoped<IEventBusService, AzureServiceBusService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddApacheKafka(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
+            {
+                x.UsingAzureServiceBus((context, cfg) =>
+                {
+                    cfg.Host(configuration["EventBus:ConnectionString"]);
+                });
+
+                x.AddRider(rider =>
+                {
+                    rider.AddProducer<ProductPriceChangedEvent>("ProductPriceChangedEvent");
+
+                    rider.AddConsumer<ProductPriceChangedEventHandler>();
+
+                    rider.UsingKafka((context, k) =>
+                    {
+                        k.Host("13.76.4.84:9092");
+
+                        k.TopicEndpoint<ProductPriceChangedEvent>("ProductPriceChangedEvent", "5930764187497445149", e =>
+                        {
+                            e.ConfigureConsumer<ProductPriceChangedEventHandler>(context);
+                        });
+                    });
+                });
+            });
+
+
+            services.AddMassTransitHostedService();
+            services.AddScoped<IEventBusService, KafkaEventBusService>();
+            services.AddScoped<ITopicProducerFactory, TopicProducerFactory>();
 
             return services;
         }

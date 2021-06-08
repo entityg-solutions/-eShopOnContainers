@@ -1,8 +1,8 @@
-﻿using eShopOnContainers.Events.Base;
+﻿using eShopOnContainers.Events.Core;
 
 namespace eShopOnContainers.Events
 {
-    public class ProductPriceChangedEvent : BaseEvent
+    public class ProductPriceChangedEvent : IntegrationEvent
     {
         public int ProductId { get; private set; }
 
@@ -10,7 +10,7 @@ namespace eShopOnContainers.Events
 
         public decimal OldPrice { get; private set; }
 
-        public ProductPriceChangedEvent(int productId, decimal newPrice, decimal oldPrice)
+        public ProductPriceChangedEvent(string correlationId, int productId, decimal newPrice, decimal oldPrice) : base(correlationId)
         {
             ProductId = productId;
             NewPrice = newPrice;

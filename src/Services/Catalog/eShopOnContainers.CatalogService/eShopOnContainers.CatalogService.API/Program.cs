@@ -1,8 +1,12 @@
+using System;
 using eShopOnContainers.CatalogService.API.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using eShopOnContainers.Events;
+using MassTransit;
+using MassTransit.KafkaIntegration;
 
 namespace eShopOnContainers.CatalogService.API
 {
@@ -16,6 +20,10 @@ namespace eShopOnContainers.CatalogService.API
                 var services = scope.ServiceProvider;
                 var dbContext = services.GetRequiredService<CatalogContext>();
                 await new CatalogContextSeed().SeedAsync(dbContext);
+
+                var bus = services.GetRequiredService<IBusControl>();
+
+                await bus.StartAsync();
             }
 
             host.Run();

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace eShopOnContainers.CatalogService.API.Infrastructure.ESB
 {
-    public class EventBusService : IEventBusService
+    public class AzureServiceBusService : IEventBusService
     {
         private readonly IPublishEndpoint _publishEndpoint;
 
-        public EventBusService(IPublishEndpoint publishEndpoint)
+        public AzureServiceBusService(IPublishEndpoint publishEndpoint)
         {
             _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
         }

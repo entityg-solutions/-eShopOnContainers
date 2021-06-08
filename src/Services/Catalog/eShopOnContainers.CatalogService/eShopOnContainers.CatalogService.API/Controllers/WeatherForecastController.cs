@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using MassTransit.KafkaIntegration;
 
 namespace eShopOnContainers.CatalogService.API.Controllers
 {
@@ -20,29 +22,45 @@ namespace eShopOnContainers.CatalogService.API.Controllers
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IEventBusService _eventBusService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IEventBusService eventBusService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, 
+            IEventBusService eventBusService)
         {
             _logger = logger;
             _eventBusService = eventBusService;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IActionResult> Get(string text)
         {
-            _eventBusService.PublishProductPriceChangedEvent(new ProductPriceChangedEvent(100, 25, 56)
-            {
-                MachineName = Environment.MachineName,
-                Originate = "eShopOnContainers.CatalogService.API"
-            }).GetAwaiter();
+            
+            //await _producer.Produce(new ProductPriceChangedEvent(1, 3, 3)
+            //{
 
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            //});
+
+            try
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                await _eventBusService.PublishProductPriceChangedEvent(new ProductPriceChangedEvent(100, 25, 56)
+                {
+                    MachineName = Environment.MachineName,
+                    Originate = text
+                });
+
+                var rng = new Random();
+                var res= Enumerable.Range(1, 5).Select(index => new WeatherForecast
+                    {
+                        Date = DateTime.Now.AddDays(index),
+                        TemperatureC = rng.Next(-20, 55),
+                        Summary = Summaries[rng.Next(Summaries.Length)]
+                    })
+                    .ToArray();
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                return Ok(e.Message);
+            }
+            
         }
     }
 }
